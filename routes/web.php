@@ -6,6 +6,8 @@ use App\Events\MessageSent;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\ChatController;
+use App\Http\Controllers\Admin\DashboardController;
 
 Route::get('/', function () {
     return redirect()->route('dashboard');
@@ -13,10 +15,7 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    Route::get('/dashboard', function () {
-        $users = User::where('id','!=', Auth::user()->id)->get();
-        return view('dashboard',compact('users'));
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
 
     Route::get('/chat/{friend}', function (User $friend) {
@@ -41,20 +40,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
 
-    Route::post('/messages/{friend}', function (User $friend) {
-        // dd(request()->input('content'));
-        $message = Message::create([
-            'sender_id' => auth()->id(),
-            'receiver_id' => $friend->id,
-            'content' => request()->input('content')
-        ]);
-
-        $message->load('receiver');
-
-        broadcast(new MessageSent($message));
-
-        return  $message;
-    });
+    Route::post('/messages/{friend}', [ChatController::class, 'send'])->name('send.message');
 });
 
 
