@@ -17,8 +17,12 @@ class ChatController extends Controller
     public function send(Request $request, User $friend)
     {
         $message = MessageService::send($request, $friend);
-        Log::info(json_encode($message));
-        broadcast(new MessageSent($message));
+        // try catch broadcast
+        try {
+            broadcast(new MessageSent($message));
+        } catch (\Exception $e) {
+            Log::error('Error broadcasting message: ' . $e->getMessage());
+        }
         return $message;
     }
 }

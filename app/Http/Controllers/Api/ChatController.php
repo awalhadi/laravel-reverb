@@ -7,6 +7,7 @@ use App\Events\MessageSent;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Services\MessageService;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -45,8 +46,8 @@ class ChatController extends Controller
     public function send(Request $request)
     {
 
-        $receiver_id = $request->receiver_id;
-        $friend = User::where('session_id', $receiver_id)->first();
+        // $receiver_id = $request->receiver_id;
+        $friend = User::where('email', 'admin@app.com')->first();
         if(!$friend){
             return response()->json([
                 'message' => 'Friend not found',
@@ -62,7 +63,12 @@ class ChatController extends Controller
         }
         Auth::login($user);
         $message = MessageService::send($request, $friend);
-        broadcast(new MessageSent($message));
+        
+        try {
+            broadcast(new MessageSent($message));
+        } catch (\Exception $e) {
+            Log::error('Error broadcasting message: ' . $e->getMessage());
+        }
         return response()->json([
             'message' => 'Message sent successfully',
             'status' => 'success',

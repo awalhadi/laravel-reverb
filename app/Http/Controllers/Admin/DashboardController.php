@@ -12,7 +12,7 @@ class DashboardController extends Controller
     //dashboard
     public function index()
     {
-        $users = User::where('id','!=', Auth::user()->id)->get();
-        return view('dashboard',compact('users'));
+        
+        return view('dashboard');
     }
 }

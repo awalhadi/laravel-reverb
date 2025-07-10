@@ -6,7 +6,7 @@ use App\Http\Controllers\Api\ChatController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
-})->middleware('auth:sanctum');
+})->middleware('auth');
 
 // chat routes
 Route::prefix('chat')->group(function () {

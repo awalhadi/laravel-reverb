@@ -32,9 +32,8 @@ class MessageSent implements ShouldBroadcastNow
      */
     public function broadcastOn(): array
     {
-        Log::info(json_encode($this->message));
         return [
-            new PrivateChannel("chat.{$this->message->receiver_id}"),
+            new Channel("chat.{$this->message->receiver_id}"),
         ];
     }
 }
